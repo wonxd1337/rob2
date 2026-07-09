@@ -1,6 +1,7 @@
 import subprocess
 import time
 import re
+import os
 
 def run(cmd):
     try:
@@ -41,8 +42,22 @@ def set_clipboard(text):
     run(f"service call clipboard 2 i32 0 s16 '{text_escaped}'")
 
 def dump_ui():
+    """
+    Jalankan uiautomator dump ke /data/local/tmp/ui.xml,
+    lalu baca isinya. Return string kosong jika gagal.
+    """
+    # Hapus file lama jika ada (agar tidak terbaca usang)
+    run("rm -f /data/local/tmp/ui.xml")
+    # Dump UI
     run("uiautomator dump /data/local/tmp/ui.xml")
-    return run("cat /data/local/tmp/ui.xml")
+    # Tunggu sebentar agar file terwrite
+    time.sleep(0.5)
+    # Baca file
+    xml = run("cat /data/local/tmp/ui.xml")
+    # Jika kosong, coba dengan root
+    if not xml:
+        xml = run_root("cat /data/local/tmp/ui.xml")
+    return xml
 
 def is_running(pkg):
     out = run_root(f"ps -A | grep {pkg}")
