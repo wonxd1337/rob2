@@ -1,6 +1,7 @@
 import time
 import os
 import sys
+from config import PRIVATE_SERVER_CODE
 from adb_utils import is_running, dump_ui
 from delta_control import full_process, get_status, get_username
 from utils import Colors, bold, green, red, yellow, blue, cyan, magenta, get_status_color, get_ascii_art
@@ -76,7 +77,7 @@ def monitor(packages, place_id, bot_token, channel_id, interval=10):
                 if new_status == "Offline":
                     print(f"\n{red(bold('[!]'))} {bold(pkg)} {red('offline, restarting...')}")
                     show_loading(f"Restarting {pkg}...", 1.5)
-                    uname = full_process(pkg, place_id, bot_token, channel_id)
+                    uname = full_process(pkg, place_id, bot_token, channel_id, PRIVATE_SERVER_CODE)
                     if uname and uname != "Unknown":
                         username_map[pkg] = uname
                     status[pkg] = get_status(pkg)

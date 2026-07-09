@@ -1,5 +1,5 @@
 import time
-from config import PACKAGES_FILE, CHANNEL_ID, PLACE_ID, DELAY, INTERVAL
+from config import PACKAGES_FILE, CHANNEL_ID, PLACE_ID, PRIVATE_SERVER_CODE, DELAY, INTERVAL
 from delta_control import full_process, get_username
 from monitor import monitor, show_loading
 from utils import get_ascii_art, Colors, bold, green, red, yellow, cyan
