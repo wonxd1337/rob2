@@ -1,7 +1,6 @@
 import time
 import os
 import sys
-from config import PRIVATE_SERVER_CODE
 from adb_utils import is_running, dump_ui
 from delta_control import full_process, get_status, get_username
 from utils import Colors, bold, green, red, yellow, blue, cyan, magenta, get_status_color, get_ascii_art
@@ -14,7 +13,7 @@ def clear_screen():
     os.system('clear' if os.name == 'posix' else 'cls')
 
 def show_loading(message, duration=1.5):
-    chars = ['⣾', '⣽', '⣻', '⢿', '⡿', '⣟', '⣯', '⣷']
+    chars = ['', '', '', '', '', '', '', '']
     end_time = time.time() + duration
     i = 0
     while time.time() < end_time:
@@ -45,11 +44,11 @@ def print_table(packages, status, username_map, start_time, force=False):
         colored_status = get_status_color(stat)
         print(f"{bold(username):<15} {pkg:<20} {bold(time_str):<12} {colored_status}")
     print("=" * 75)
-    print(f"{Colors.WHITE}⏱ Last Update: {time.strftime('%H:%M:%S')}{Colors.END}")
-    print(f"{Colors.CYAN}📡 Monitoring {len(packages)} instances...{Colors.END}")
+    print(f"{Colors.WHITE} Last Update: {time.strftime('%H:%M:%S')}{Colors.END}")
+    print(f"{Colors.CYAN} Monitoring {len(packages)} instances...{Colors.END}")
     table_dirty = False
 
-def monitor(packages, place_id, bot_token, channel_id, interval=10):
+def monitor(packages, place_id, bot_token, channel_id, private_code=None, interval=10):
     global last_status, last_username, table_dirty
     start_time = time.time()
     status = {}
@@ -67,6 +66,7 @@ def monitor(packages, place_id, bot_token, channel_id, interval=10):
     last_username = username_map.copy()
     table_dirty = True
     print_table(packages, status, username_map, start_time, force=True)
+    
     while True:
         changed = False
         for pkg in packages:
@@ -77,7 +77,8 @@ def monitor(packages, place_id, bot_token, channel_id, interval=10):
                 if new_status == "Offline":
                     print(f"\n{red(bold('[!]'))} {bold(pkg)} {red('offline, restarting...')}")
                     show_loading(f"Restarting {pkg}...", 1.5)
-                    uname = full_process(pkg, place_id, bot_token, channel_id, PRIVATE_SERVER_CODE)
+                    # Gunakan parameter join yang sama (private_code atau place_id)
+                    uname = full_process(pkg, place_id, bot_token, channel_id, private_code)
                     if uname and uname != "Unknown":
                         username_map[pkg] = uname
                     status[pkg] = get_status(pkg)

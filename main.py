@@ -1,8 +1,16 @@
 import time
-from config import PACKAGES_FILE, CHANNEL_ID, PLACE_ID, PRIVATE_SERVER_CODE, DELAY, INTERVAL
+import re
+from config import PACKAGES_FILE, CHANNEL_ID, DELAY, INTERVAL
 from delta_control import full_process, get_username
 from monitor import monitor, show_loading
 from utils import get_ascii_art, Colors, bold, green, red, yellow, cyan
+
+def extract_private_code(link):
+    """Ekstrak parameter 'code' dari link private server Roblox."""
+    match = re.search(r'[?&]code=([^&]+)', link)
+    if match:
+        return match.group(1)
+    return None
 
 def main():
     print(get_ascii_art())
@@ -21,6 +29,27 @@ def main():
         print(red("[!] Token tidak boleh kosong!"))
         return
     
+    # ===== Konfigurasi Join =====
+    print(f"\n{cyan('[*]')} Join Configuration")
+    use_private = input(f"{bold('Use Private Server? (y/n)')}: ").strip().lower()
+    place_id = None
+    private_code = None
+    
+    if use_private == 'y':
+        link = input(f"{bold('Private Server Link')}: ").strip()
+        private_code = extract_private_code(link)
+        if not private_code:
+            print(red("[!] Gagal mengekstrak kode dari link private server."))
+            return
+        print(f"{green('[✓]')} Private server code: {private_code}")
+    else:
+        place_id = input(f"{bold('Enter Place ID')}: ").strip()
+        if not place_id.isdigit():
+            print(red("[!] Place ID harus angka."))
+            return
+        print(f"{green('[✓]')} Place ID: {place_id}")
+    
+    # Baca daftar package
     show_loading("Reading package list...", 1)
     with open(PACKAGES_FILE, "r") as f:
         packages = [line.strip() for line in f if line.strip()]
@@ -28,16 +57,21 @@ def main():
         print(red("[!] packages.txt kosong!"))
         return
     
+    # Tampilkan informasi
     print(f"\n{cyan('[*]')} Found {bold(str(len(packages)))} packages to process")
-    print(f"{cyan('[*]')} Place ID: {bold(PLACE_ID)}")
+    if private_code:
+        print(f"{cyan('[*]')} Mode: Private Server (code: {private_code})")
+    else:
+        print(f"{cyan('[*]')} Mode: Public Game (Place ID: {place_id})")
     print()
     
+    # Proses startup semua instance
     username_map = {}
     print(f"{bold('Starting up instances...')}\n")
     for i, pkg in enumerate(packages):
         print(f"[{i+1}/{len(packages)}] Processing {bold(pkg)}...")
         show_loading(f"Opening {pkg}...", 1.5)
-        uname = full_process(pkg, PLACE_ID, bot_token, CHANNEL_ID)
+        uname = full_process(pkg, place_id, bot_token, CHANNEL_ID, private_code)
         if uname and uname != "Unknown":
             username_map[pkg] = uname
             print(f"    {green('✓')} Username: {bold(uname)}")
@@ -48,7 +82,8 @@ def main():
     
     print(f"\n{green(bold('✓ Startup completed!'))}")
     show_loading("Starting monitoring...", 1)
-    monitor(packages, PLACE_ID, bot_token, CHANNEL_ID, INTERVAL)
+    # Jalankan monitor dengan parameter join yang sama
+    monitor(packages, place_id, bot_token, CHANNEL_ID, private_code, INTERVAL)
 
 if __name__ == "__main__":
     try:
