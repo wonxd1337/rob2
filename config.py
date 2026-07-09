@@ -1,5 +1,6 @@
 PACKAGES_FILE = "packages.txt"
-CHANNEL_ID = "1418920458341847092"   # Channel ID yang Anda berikan
+CHANNEL_ID = "1418920458341847092"
 PLACE_ID = "97598239454123"
+PRIVATE_SERVER_CODE = "a219beb20055cb42b51dc9c8281d116d"  # Isi kode dari link private server
 DELAY = 5
 INTERVAL = 10

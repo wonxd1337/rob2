@@ -55,18 +55,31 @@ def get_username(pkg):
         return uname2
     return "Unknown"
 
-def full_process(pkg, place_id, bot_token, channel_id):
+def full_process(pkg, place_id, bot_token, channel_id, private_code=None):
     print(f"\n[Delta] === {pkg} ===")
     start_app(pkg)
     time.sleep(3)
     wait_app(pkg, 10)
     username = get_username(pkg)
     print(f"[Delta] Username: {username}")
-    run(f"am start -a android.intent.action.VIEW -d 'roblox://placeId={place_id}' {pkg}")
+
+    # Bangun URI untuk join game
+    if private_code:
+        # Join private server langsung pakai deep link format baru
+        uri = f"roblox://navigation/share_links?code={private_code}&type=Server"
+        print(f"[Delta] Joining private server with code: {private_code}")
+    else:
+        # Join game publik pakai place ID
+        uri = f"roblox://placeId={place_id}"
+        print(f"[Delta] Joining public game ID: {place_id}")
+    
+    run(f"am start -a android.intent.action.VIEW -d '{uri}' {pkg}")
     time.sleep(5)
+    
     if not wait_delta(pkg, 30):
         print(f"[Delta] Delta tidak muncul untuk {pkg}")
         return username
+
     short = get_shortlink(pkg)
     if not short:
         return username
