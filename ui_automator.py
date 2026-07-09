@@ -55,3 +55,14 @@ def is_in_lobby():
         if find(elem):
             return True
     return False
+    
+def is_key_requested():
+    """Return True jika Delta sedang meminta key (tombol Get/Receive Key atau EditText + Continue)."""
+    xml = dump_ui()
+    if re.search(r'(?:text|content-desc)="(?:Get|Receive)\s*Key"', xml, re.I):
+        return True
+    has_edit = re.search(r'class="android\.widget\.EditText"', xml)
+    has_continue = re.search(r'(?:text|content-desc)="Continue"', xml, re.I)
+    if has_edit and has_continue:
+        return True
+    return False
