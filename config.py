@@ -1,0 +1,5 @@
+PACKAGES_FILE = "packages.txt"
+CHANNEL_ID = "1418920458341847092"   # Channel ID yang Anda berikan
+PLACE_ID = "97598239454123"
+DELAY = 5
+INTERVAL = 10
