@@ -47,9 +47,9 @@ def dump_ui():
     lalu baca isinya. Return string kosong jika gagal.
     """
     # Hapus file lama jika ada (agar tidak terbaca usang)
-    run("rm -f /data/local/tmp/ui.xml")
+    run_root("rm -f /data/local/tmp/ui.xml")
     # Dump UI
-    run("uiautomator dump /data/local/tmp/ui.xml")
+    run_root("uiautomator dump /data/local/tmp/ui.xml")
     # Tunggu sebentar agar file terwrite
     time.sleep(0.5)
     # Baca file
