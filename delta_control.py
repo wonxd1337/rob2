@@ -63,19 +63,20 @@ def full_process(pkg, place_id, bot_token, channel_id, private_code=None):
     username = get_username(pkg)
     print(f"[Delta] Username: {username}")
 
-    # Bangun URI untuk join game
+    # Bangun URI sesuai mode
     if private_code:
-        # Join private server langsung pakai deep link format baru
-        uri = f"roblox://navigation/share_links?code={private_code}&type=Server"
+        # Gunakan link web private server
+        uri = f"https://www.roblox.com/share?code={private_code}&type=Server"
         print(f"[Delta] Joining private server with code: {private_code}")
     else:
-        # Join game publik pakai place ID
+        # Join game publik
         uri = f"roblox://placeId={place_id}"
         print(f"[Delta] Joining public game ID: {place_id}")
-    
+
+    # Jalankan intent
     run(f"am start -a android.intent.action.VIEW -d '{uri}' {pkg}")
     time.sleep(5)
-    
+
     if not wait_delta(pkg, 30):
         print(f"[Delta] Delta tidak muncul untuk {pkg}")
         return username
